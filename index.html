@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Website Kasir Sederhana</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 10px;
+    }
+    h1 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #total {
+      font-size: 1.2em;
+      text-align: right;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Website Kasir Sederhana</h1>
+
+  <form id="formBarang">
+    <label>Nama Barang:</label>
+    <input type="text" id="namaBarang" required />
+
+    <label>Harga (Rp):</label>
+    <input type="number" id="hargaBarang" min="0" required />
+
+    <label>Jumlah:</label>
+    <input type="number" id="jumlahBarang" min="1" required />
+
+    <button type="submit">Tambah Barang</button>
+  </form>
+
+  <table id="tabelKasir">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Nama Barang</th>
+        <th>Harga (Rp)</th>
+        <th>Jumlah</th>
+        <th>Subtotal (Rp)</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Baris barang akan muncul di sini -->
+    </tbody>
+  </table>
+
+  <div id="total">Total: Rp 0</div>
+
+  <script>
+    const form = document.getElementById('formBarang');
+    const tbody = document.querySelector('#tabelKasir tbody');
+    const totalDisplay = document.getElementById('total');
+    let barangList = [];
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const nama = document.getElementById('namaBarang').value.trim();
+      const harga = parseFloat(document.getElementById('hargaBarang').value);
+      const jumlah = parseInt(document.getElementById('jumlahBarang').value);
+
+      if (nama === '' || harga <= 0 || jumlah <= 0) {
+        alert('Isi data dengan benar!');
+        return;
+      }
+
+      // Tambah barang ke list
+      barangList.push({ nama, harga, jumlah });
+
+      // Update tampilan
+      renderTable();
+
+      // Reset form
+      form.reset();
+      document.getElementById('namaBarang').focus();
+    });
+
+    function renderTable() {
+      tbody.innerHTML = '';
+      let total = 0;
+
+      barangList.forEach((item, index) => {
+        const subtotal = item.harga * item.jumlah;
+        total += subtotal;
+
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${item.nama}</td>
+          <td>${item.harga.toLocaleString('id-ID')}</td>
+          <td>${item.jumlah}</td>
+          <td>${subtotal.toLocaleString('id-ID')}</td>
+          <td><button onclick="hapusBarang(${index})">Hapus</button></td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      totalDisplay.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+    }
+
+    function hapusBarang(index) {
+      barangList.splice(index, 1);
+      renderTable();
+    }
+  </script>
+  
+</body>
+</html>
